@@ -108,7 +108,7 @@ describe('cleanup', () => {
   });
 
   describe('when placed in a test', () => {
-    test('it runs after the', async () => {
+    test('it runs after the test', async () => {
       await runScenario('test_it');
       expect(data).toBe([
         "succeeding test",
@@ -119,6 +119,25 @@ describe('cleanup', () => {
         "cleanup failing test",
         "failing it",
         "cleanup failing it",
+        ""
+      ].join('\n'));
+    });
+  });
+
+  describe('an async test', () => {
+    test('it runs at the appropriate times', async () => {
+      await runScenario('async');
+      expect(data).toBe([
+        "beforeAll",
+        "beforeEach",
+        "succeeding test",
+        "cleanup succeeding test",
+        "cleanup each",
+        "beforeEach",
+        "failing it",
+        "cleanup failing it",
+        "cleanup each",
+        "cleanup all",
         ""
       ].join('\n'));
     });
