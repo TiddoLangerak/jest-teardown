@@ -1,6 +1,8 @@
 const {
   beforeAll: jBeforeAll,
-  beforeEach: jBeforeEach
+  beforeEach: jBeforeEach,
+  test: jTest,
+  it: jIt
 } = globalThis;
 
 let cleaners;
@@ -29,6 +31,22 @@ function patchedHook(jBefore, after) {
   }
 }
 
-globalThis.beforeAll = patchedHook(jBeforeAll, afterAll);
+function patchedTest(testMethod) {
+  return (name, fn, ...otherArgs) => {
+    testMethod(name, async (...innerArgs) => {
+      try {
+        cleaners = [];
+        return await fn(...innerArgs);
+      } finally {
+        for (const cleaner of cleaners.splice(0, Number.POSITIVE_INFINITY)) {
+          await cleaner();
+        }
+      }
+    }, ...otherArgs);
+  }
+}
 
+globalThis.beforeAll = patchedHook(jBeforeAll, afterAll);
 globalThis.beforeEach = patchedHook(jBeforeEach, afterEach);
+globalThis.test = patchedTest(jTest);
+globalThis.it = patchedTest(jIt);

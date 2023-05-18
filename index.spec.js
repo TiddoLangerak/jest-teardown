@@ -107,6 +107,23 @@ describe('cleanup', () => {
     });
   });
 
+  describe('when placed in a test', () => {
+    test('it runs after the', async () => {
+      await runScenario('test_it');
+      expect(data).toBe([
+        "succeeding test",
+        "cleanup succeeding test",
+        "succeeding it",
+        "cleanup succeeding it",
+        "failing test",
+        "cleanup failing test",
+        "failing it",
+        "cleanup failing it",
+        ""
+      ].join('\n'));
+    });
+  });
+
 });
 
 async function runScenario(scenario) {
@@ -115,11 +132,7 @@ async function runScenario(scenario) {
         `node_modules/.bin/jest --runTestsByPath scenarios/${scenario}.js --testRegex=.*`,
         { env: { ...process.env, NODE_OPTIONS: "--experimental-vm-modules" }},
         (err, stdout, stderr) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
+          resolve();
         }
       );
     });
