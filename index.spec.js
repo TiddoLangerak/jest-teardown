@@ -212,19 +212,13 @@ describe('cleanup', () => {
       ].join('\n'));
     });
   });
-  describe.skip('a test.skip.failing', () => {
+  describe('a test.skip', () => {
     test("doesn't run", async () => {
-      throw new Error("TODO");
-    });
-  });
-  describe.skip('a test.skip', () => {
-    test("doesn't run", async () => {
-      throw new Error("TODO");
-    });
-  });
-  describe.skip('a test.skip.each', () => {
-    test("doesn't run", async () => {
-      throw new Error("TODO");
+      await runScenario("skip");
+      expect(data).toBe([
+        "test",
+        ""
+      ].join('\n'));
     });
   });
   describe.skip('a test.todo', () => {
