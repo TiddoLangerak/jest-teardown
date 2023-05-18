@@ -1,0 +1,12 @@
+{
+  "name": "jest-cleanup",
+  "version": "0.0.1",
+  "description": "Placeholder for jest-cleanup package",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Tiddo Langerak <npm@tiddo.ee>",
+  "license": "MIT"
+}
