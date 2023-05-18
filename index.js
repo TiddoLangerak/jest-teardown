@@ -54,9 +54,10 @@ function patchedTest(testMethod) {
   patched.only = (name, fn, ...otherArgs) => testMethod.only(name, wrapTest(fn), ...otherArgs);
   patched.only.each = (...tableArgs) => (name, fn, ...otherArgs) => testMethod.only.each(...tableArgs)(name, wrapTest(fn), ...otherArgs);
   patched.only.failing = (name, fn, ...otherArgs) => testMethod.only.failing(name, wrapTest(fn), ...otherArgs);
-  patched.skip = (name, fn, ...otherArgs) => testMethod.skip(name, wrapTest(fn), ...otherArgs);
-  patched.skip.each = (...tableArgs) => (name, fn, ...otherArgs) => testMethod.skip.each(...tableArgs)(name, wrapTest(fn), ...otherArgs);
-  patched.skip.failing = (name, fn, ...otherArgs) => testMethod.skip.failing(name, wrapTest(fn), ...otherArgs);
+  patched.skip = (name, fn, ...otherArgs) => testMethod.skip(name, fn, ...otherArgs);
+  patched.skip.each = (...tableArgs) => (name, fn, ...otherArgs) => testMethod.skip.each(...tableArgs)(name, fn, ...otherArgs);
+  patched.skip.failing = (name, fn, ...otherArgs) => testMethod.skip.failing(name, fn, ...otherArgs);
+  patched.todo = (name, ...otherArgs) => testMethod.todo(name, ...otherArgs);
   return patched;
 }
 

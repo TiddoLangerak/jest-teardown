@@ -213,7 +213,7 @@ describe('cleanup', () => {
     });
   });
   describe('a test.skip', () => {
-    test("doesn't run", async () => {
+    test("doesn't throw and the test doesn't run", async () => {
       await runScenario("skip");
       expect(data).toBe([
         "test",
@@ -221,9 +221,13 @@ describe('cleanup', () => {
       ].join('\n'));
     });
   });
-  describe.skip('a test.todo', () => {
-    test("doesn't run", async () => {
-      throw new Error("TODO");
+  describe('a test.todo', () => {
+    test("doesn't throw and the test doesn't run", async () => {
+      await runScenario("todo");
+      expect(data).toBe([
+        "test",
+        ""
+      ].join('\n'));
     });
   });
 
