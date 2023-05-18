@@ -31,20 +31,25 @@ function patchedHook(jBefore, after) {
   }
 }
 
-function patchedTest(testMethod) {
-  const patched = (name, fn, ...otherArgs) => {
-    testMethod(name, async (...innerArgs) => {
-      try {
-        cleaners = [];
-        return await fn(...innerArgs);
-      } finally {
-        for (const cleaner of cleaners.splice(0, Number.POSITIVE_INFINITY)) {
-          await cleaner();
-        }
+function wrapTest(fn) {
+  return async (...innerArgs) => {
+    try {
+      cleaners = [];
+      return await fn(...innerArgs);
+    } finally {
+      for (const cleaner of cleaners.splice(0, Number.POSITIVE_INFINITY)) {
+        await cleaner();
       }
-    }, ...otherArgs);
+    }
   }
+}
+
+function patchedTest(testMethod) {
+  const patched = (name, fn, ...otherArgs) => testMethod(name, wrapTest(fn), ...otherArgs);
   patched.concurrent = testMethod.concurrent;
+  patched.each = (...tableArgs) => (name, fn, ...otherArgs) => testMethod.each(...tableArgs)(name, wrapTest(fn), ...otherArgs);
+  patched.failing = (name, fn, ...otherArgs) => testMethod.failing(name, wrapTest(fn), ...otherArgs);
+  patched.failing.each = (...tableArgs) => (name, fn, ...otherArgs) => testMethod.failing.each(...tableArgs)(name, wrapTest(fn), ...otherArgs);
   return patched;
 }
 

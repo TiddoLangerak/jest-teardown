@@ -6,3 +6,6 @@ try {
 } catch (e) {
   log(e.message);
 }
+
+// Needed to make the test suite not empty
+test("", () => {});

@@ -109,7 +109,7 @@ describe('cleanup', () => {
 
   describe('when placed in a test', () => {
     test('it runs after the test', async () => {
-      await runScenario('test_it');
+      await runScenario('test_it', true);
       expect(data).toBe([
         "succeeding test",
         "cleanup succeeding test",
@@ -126,7 +126,7 @@ describe('cleanup', () => {
 
   describe('an async test', () => {
     test('it runs at the appropriate times', async () => {
-      await runScenario('async');
+      await runScenario('async', true);
       expect(data).toBe([
         "beforeAll",
         "beforeEach",
@@ -155,7 +155,7 @@ describe('cleanup', () => {
 
   describe('in a concurrent test', () => {
     test('it throws an error when using a cleanup hook', async () => {
-      await runScenario('concurrent', false);
+      await runScenario('concurrent');
       expect(data).toBe([
         "non-cleanup test",
         "cleanup test",
@@ -165,21 +165,37 @@ describe('cleanup', () => {
     });
   });
 
-  describe.skip('in a test.each', () => {
+  describe('in a test.each', () => {
     test('it runs after each test', async () => {
-      throw new Error("TODO");
+      await runScenario('each');
+      expect(data).toBe([
+        "each 1 2 3",
+        "cleanup 1 2 3",
+        "each 2 3 4",
+        "cleanup 2 3 4",
+        "template 1 2 3",
+        "cleanup template 1 2 3",
+        "template 2 3 4",
+        "cleanup template 2 3 4",
+        ""
+      ].join('\n'));
     });
   });
-  describe.skip('in a test.failing', () => {
+  describe('in a test.failing', () => {
     test('it runs after the test', async () => {
-      throw new Error("TODO");
+      await runScenario('failing');
+      expect(data).toBe([
+        "failing test",
+        "cleanup failing",
+        "failing each 1 2 3",
+        "cleanup failing each 1 2 3",
+        "failing each 2 3 4",
+        "cleanup failing each 2 3 4",
+        ""
+      ].join('\n'));
     });
   });
-  describe.skip('in a test.failing.each', () => {
-    test('it runs after each test', async () => {
-      throw new Error("TODO");
-    });
-  });
+
   describe.skip('in a test.only.failing', () => {
     test('it runs after the test', async () => {
       throw new Error("TODO");
@@ -218,7 +234,7 @@ describe('cleanup', () => {
 
 });
 
-async function runScenario(scenario, expectError = true) {
+async function runScenario(scenario, expectError = false) {
     await new Promise((resolve, reject) => {
       const res = cp.exec(
         `node_modules/.bin/jest --runTestsByPath scenarios/${scenario}.js --testRegex=.*`,

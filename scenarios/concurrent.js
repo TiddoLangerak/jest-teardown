@@ -1,7 +1,7 @@
 import { cleanup } from '../index.js';
 import { log } from './util.js'
 
-describe("", () => {
+describe("concurrent", () => {
   test.concurrent("non-cleanup test", () => {
     log("non-cleanup test");
   });
