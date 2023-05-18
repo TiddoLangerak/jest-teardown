@@ -3,8 +3,15 @@
   "version": "0.0.1",
   "description": "Placeholder for jest-cleanup package",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+  },
+  "peerDependencies": {
+    "jest": ">=25.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   },
   "keywords": [],
   "author": "Tiddo Langerak <npm@tiddo.ee>",
