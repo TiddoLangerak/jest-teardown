@@ -54,6 +54,25 @@ describe('cleanup', () => {
     });
   });
 
+  describe('when placed in a beforeAll (nested)', () => {
+    test('it runs after each test', async () => {
+      await runScenario('beforeall_nested');
+      expect(data).toBe([
+        "Outer before all",
+        "Inner before all",
+        "test 1",
+        "test 2",
+        "Inner cleanup",
+        "Inner before all 2",
+        "test 3",
+        "test 4",
+        "Inner cleanup 2",
+        "Outer cleanup",
+        ""
+      ].join('\n'));
+    });
+  });
+
   describe('when placed in a beforeEach', () => {
     test('it runs after each test', async () => {
       await runScenario('beforeeach');
@@ -68,6 +87,26 @@ describe('cleanup', () => {
       ].join('\n'));
     });
   });
+
+  describe('when placed in a beforeEach (nested)', () => {
+    test('it runs after each test', async () => {
+      await runScenario('beforeeach_nested');
+      expect(data).toBe([
+        "Outer before each",
+        "Inner before each",
+        "test 1",
+        "Inner cleanup",
+        "Outer cleanup",
+        "Outer before each",
+        "Inner before each",
+        "test 2",
+        "Inner cleanup",
+        "Outer cleanup",
+        ""
+      ].join('\n'));
+    });
+  });
+
 });
 
 async function runScenario(scenario) {
