@@ -143,9 +143,76 @@ describe('cleanup', () => {
     });
   });
 
+  describe('outside of a test or hook', () => {
+    test('it throws an error', async () => {
+      await runScenario('outside');
+      expect(data).toBe([
+        "cleanup can only be called from within `beforeAll`, `beforeEach`, `test` or `it`",
+        ""
+      ].join('\n'));
+    });
+  });
+
+  describe.skip('in a concurrent test', () => {
+    test('it throws an error', async () => {
+      throw new Error("TODO");
+    });
+  });
+
+  describe.skip('in a test.each', () => {
+    test('it runs after each test', async () => {
+      throw new Error("TODO");
+    });
+  });
+  describe.skip('in a test.failing', () => {
+    test('it runs after the test', async () => {
+      throw new Error("TODO");
+    });
+  });
+  describe.skip('in a test.failing.each', () => {
+    test('it runs after each test', async () => {
+      throw new Error("TODO");
+    });
+  });
+  describe.skip('in a test.only.failing', () => {
+    test('it runs after the test', async () => {
+      throw new Error("TODO");
+    });
+  });
+  describe.skip('a test.skip.failing', () => {
+    test("doesn't run", async () => {
+      throw new Error("TODO");
+    });
+  });
+  describe.skip('in a test.only', () => {
+    test('it runs after the test', async () => {
+      throw new Error("TODO");
+    });
+  });
+  describe.skip('in a test.only.each', () => {
+    test('it runs after each test', async () => {
+      throw new Error("TODO");
+    });
+  });
+  describe.skip('a test.skip', () => {
+    test("doesn't run", async () => {
+      throw new Error("TODO");
+    });
+  });
+  describe.skip('a test.skip.each', () => {
+    test("doesn't run", async () => {
+      throw new Error("TODO");
+    });
+  });
+  describe.skip('a test.todo', () => {
+    test("doesn't run", async () => {
+      throw new Error("TODO");
+    });
+  });
+
 });
 
-async function runScenario(scenario) {
+async function runScenario(scenario, expectError = false) {
     await new Promise((resolve, reject) => {
       const res = cp.exec(
         `node_modules/.bin/jest --runTestsByPath scenarios/${scenario}.js --testRegex=.*`,
