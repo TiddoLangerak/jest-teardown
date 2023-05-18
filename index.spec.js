@@ -196,23 +196,24 @@ describe('cleanup', () => {
     });
   });
 
-  describe.skip('in a test.only.failing', () => {
+  describe('in a test.only', () => {
     test('it runs after the test', async () => {
-      throw new Error("TODO");
+      await runScenario("only");
+      expect(data).toBe([
+        "only test",
+        "cleanup only",
+        "only each 1 2 3",
+        "cleanup only each 1 2 3",
+        "only each 2 3 4",
+        "cleanup only each 2 3 4",
+        "only failing",
+        "cleanup only failing",
+        ""
+      ].join('\n'));
     });
   });
   describe.skip('a test.skip.failing', () => {
     test("doesn't run", async () => {
-      throw new Error("TODO");
-    });
-  });
-  describe.skip('in a test.only', () => {
-    test('it runs after the test', async () => {
-      throw new Error("TODO");
-    });
-  });
-  describe.skip('in a test.only.each', () => {
-    test('it runs after each test', async () => {
       throw new Error("TODO");
     });
   });

@@ -45,11 +45,15 @@ function wrapTest(fn) {
 }
 
 function patchedTest(testMethod) {
+  // There's probably a smarter way to do this, but for now this works.
   const patched = (name, fn, ...otherArgs) => testMethod(name, wrapTest(fn), ...otherArgs);
   patched.concurrent = testMethod.concurrent;
   patched.each = (...tableArgs) => (name, fn, ...otherArgs) => testMethod.each(...tableArgs)(name, wrapTest(fn), ...otherArgs);
   patched.failing = (name, fn, ...otherArgs) => testMethod.failing(name, wrapTest(fn), ...otherArgs);
   patched.failing.each = (...tableArgs) => (name, fn, ...otherArgs) => testMethod.failing.each(...tableArgs)(name, wrapTest(fn), ...otherArgs);
+  patched.only = (name, fn, ...otherArgs) => testMethod.only(name, wrapTest(fn), ...otherArgs);
+  patched.only.each = (...tableArgs) => (name, fn, ...otherArgs) => testMethod.only.each(...tableArgs)(name, wrapTest(fn), ...otherArgs);
+  patched.only.failing = (name, fn, ...otherArgs) => testMethod.only.failing(name, wrapTest(fn), ...otherArgs);
   return patched;
 }
 
