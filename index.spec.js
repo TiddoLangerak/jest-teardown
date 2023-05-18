@@ -147,15 +147,21 @@ describe('cleanup', () => {
     test('it throws an error', async () => {
       await runScenario('outside');
       expect(data).toBe([
-        "cleanup can only be called from within `beforeAll`, `beforeEach`, `test` or `it`",
+        "cleanup can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
         ""
       ].join('\n'));
     });
   });
 
-  describe.skip('in a concurrent test', () => {
-    test('it throws an error', async () => {
-      throw new Error("TODO");
+  describe('in a concurrent test', () => {
+    test('it throws an error when using a cleanup hook', async () => {
+      await runScenario('concurrent', false);
+      expect(data).toBe([
+        "non-cleanup test",
+        "cleanup test",
+        "cleanup can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
+        ""
+      ].join('\n'));
     });
   });
 
@@ -212,13 +218,18 @@ describe('cleanup', () => {
 
 });
 
-async function runScenario(scenario, expectError = false) {
+async function runScenario(scenario, expectError = true) {
     await new Promise((resolve, reject) => {
       const res = cp.exec(
         `node_modules/.bin/jest --runTestsByPath scenarios/${scenario}.js --testRegex=.*`,
         { env: { ...process.env, NODE_OPTIONS: "--experimental-vm-modules" }},
         (err, stdout, stderr) => {
-          resolve();
+          if (err && !expectError) {
+            console.log({ stdout, stderr });
+            reject(err);
+          } else {
+            resolve();
+          }
         }
       );
     });

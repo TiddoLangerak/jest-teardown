@@ -8,7 +8,7 @@ const {
 let cleaners;
 export function cleanup(cb) {
   if (!cleaners) {
-    throw new Error("cleanup can only be called from within `beforeAll`, `beforeEach`, `test` or `it`");
+    throw new Error("cleanup can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.");
   }
   cleaners.push(cb);
 }
@@ -32,7 +32,7 @@ function patchedHook(jBefore, after) {
 }
 
 function patchedTest(testMethod) {
-  return (name, fn, ...otherArgs) => {
+  const patched = (name, fn, ...otherArgs) => {
     testMethod(name, async (...innerArgs) => {
       try {
         cleaners = [];
@@ -44,6 +44,8 @@ function patchedTest(testMethod) {
       }
     }, ...otherArgs);
   }
+  patched.concurrent = testMethod.concurrent;
+  return patched;
 }
 
 globalThis.beforeAll = patchedHook(jBeforeAll, afterAll);
