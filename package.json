@@ -1,6 +1,6 @@
 {
   "name": "jest-cleanup",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Placeholder for jest-cleanup package",
   "main": "index.js",
   "types": "./index.d.ts",
@@ -14,8 +14,14 @@
   "devDependencies": {
     "jest": "^29.5.0"
   },
-  "keywords": ["jest", "test"],
+  "keywords": [
+    "jest",
+    "test"
+  ],
   "author": "Tiddo Langerak <npm@tiddo.ee>",
   "license": "MIT",
-  "files": ["index.js", "index.d.ts"]
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ]
 }
