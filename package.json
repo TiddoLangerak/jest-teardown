@@ -14,7 +14,8 @@
   "devDependencies": {
     "jest": "^29.5.0"
   },
-  "keywords": [],
+  "keywords": ["jest", "test"],
   "author": "Tiddo Langerak <npm@tiddo.ee>",
-  "license": "MIT"
+  "license": "MIT",
+  "files": ["index.js", "index.d.ts"]
 }
