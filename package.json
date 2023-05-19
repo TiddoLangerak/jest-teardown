@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Placeholder for jest-cleanup package",
   "main": "index.js",
+  "types": "./index.d.ts",
   "type": "module",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
