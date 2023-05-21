@@ -1,6 +1,6 @@
 {
   "name": "jest-teardown",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Unified teardown hook for Jest that enables bundling of setup & teardown work into reusable functions.",
   "keywords": [
     "jest",
