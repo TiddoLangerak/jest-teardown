@@ -110,6 +110,7 @@ afterEach(() => {
 **The fourth issue** is that while we have teardown hooks for "all" and "each" tests, we don't have teardown hooks for individual test. Instead, we'll manually need to teardown using `try-finally` constructs.
 <details>
   <summary>Example</summary>
+
   ```javascript
   // If we only need the city database in some isolated test(s), then we'll need to write something convoluted like this:
 
