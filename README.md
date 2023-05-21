@@ -1,14 +1,16 @@
 # jest-teardown
 
-_test hooks done right._
+_Cleanup from anywhere._
 
-`teardown` is a hook that runs at the end of the current scope:
+`jest-teardown` is a unified teardown hook for Jest that enables bundling of setup & teardown work into reusable functions.
+
+`teardown` hooks are context-aware and trigger their cleanup at the end of the current scope:
 
 - When called in a `beforeEach`, it'll run as `afterEach`
 - When called in a `beforeAll`, it'll run as `afterAll`
 - When called in a test, it'll run at the end of the test
 
-This allows to put setup & teardown together in reusable utility functions, which can then be used wherever needed.
+This allows to put setup & teardown together in reusable utility functions, which can then be re-used wherever needed.
 
 # Usage
 Using the example from [the Jest documentation](https://jestjs.io/docs/setup-teardown): we have an `initializeCityDatabase` setup method and a `clearCityDatabase` teardown method:
@@ -81,9 +83,9 @@ afterEach(() => {
 });
 ```
 
-**The first issue** that we'll run into is that it's easy to forget to add the teardown hook. And when we forget, this can cause failures in completely unrelated tests.
+**The first issue** is that it's easy to forget to add the teardown hook. And when we forget, this can cause failures in completely unrelated tests that follow later.
 
-**The second issue** is that we'll end up duplicating extra logic if multiple tests have similar setup needs.
+**The second issue** is that we'll end up duplicating additional logic if multiple tests have similar setup needs, without a good way of abstracting this.
 
 **The third issue** is that sharing state between the setup to the teardown is rather convoluted, as it needs to be passed through exposed variables in a higher (unrelated) scope.
 <details>
