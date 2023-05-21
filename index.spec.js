@@ -1,13 +1,10 @@
-import net from 'node:net';
-import path from 'node:path';
-import * as url from 'url';
-import cp from 'node:child_process';
-import fs from 'node:fs/promises';
+const net = require('node:net');
+const path = require('node:path');
+const url = require('url');
+const cp = require('node:child_process');
+const fs = require('node:fs/promises');
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const sockPath = path.join(__dirname, 'test.sock');
-
-
 
 describe('cleanup', () => {
 
@@ -237,7 +234,7 @@ async function runScenario(scenario, expectError = false) {
     await new Promise((resolve, reject) => {
       const res = cp.exec(
         `node_modules/.bin/jest --runTestsByPath scenarios/${scenario}.js --testRegex=.*`,
-        { env: { ...process.env, NODE_OPTIONS: "--experimental-vm-modules" }},
+        {},
         (err, stdout, stderr) => {
           if (err && !expectError) {
             console.log({ stdout, stderr });

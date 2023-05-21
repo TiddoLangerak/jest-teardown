@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "./index.d.ts",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "jest",
     "preversion": "pnpm test",
     "prepublish": "pnpm test"
   },

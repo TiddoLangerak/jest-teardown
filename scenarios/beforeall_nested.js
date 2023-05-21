@@ -1,5 +1,5 @@
-import { cleanup } from '../index.js';
-import { log } from './util.js'
+const { cleanup } = require('../index.js');
+const { log } = require('./util.js');
 
 describe('suite', () => {
   beforeAll(() => {
