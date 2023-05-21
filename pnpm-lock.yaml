@@ -2,9 +2,11 @@ lockfileVersion: 5.4
 
 specifiers:
   jest: ^29.5.0
+  pnpm: ^8.5.1
 
 devDependencies:
   jest: 29.5.0
+  pnpm: 8.5.1
 
 packages:
 
@@ -1941,6 +1943,12 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       find-up: 4.1.0
+    dev: true
+
+  /pnpm/8.5.1:
+    resolution: {integrity: sha512-W6elL7Nww0a/MCICkzpkbxW6f99TQuX4DuJoDjWp39X08PKDkEpg4cgj3d6EtgYADcdQWl/eM8NdlLJVE3RgpA==}
+    engines: {node: '>=16.14'}
+    hasBin: true
     dev: true
 
   /pretty-format/29.5.0:
