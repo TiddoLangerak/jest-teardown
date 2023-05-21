@@ -6,6 +6,7 @@
   "types": "./index.d.ts",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "preversion": "pn test",
     "prepublish": "pn test"
   },
   "peerDependencies": {
