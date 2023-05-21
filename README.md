@@ -2,9 +2,7 @@
 
 Out-of-the-box, `jest` provides us with some setup and teardown hooks. While the setup hooks work great, the teardown hooks not so much.
 
-So, what's the problem? There's 2:
-
-First: in a typical case, a teardown hook cleans up something that's being created in their corresponding setup hook.
+In a typical case, a teardown hook cleans up something that's being created in their corresponding setup hook.
 E.g. code in an `afterEach` typically cleans up `beforeEach`, and `afterAll` typically cleans up `beforeAll`.
 This however creates an implicit coupling between the hooks which causes unnecessary complexity and fragility in tests.
 To illustrate, let's take the example from [Jest's documentation](https://jestjs.io/docs/setup-teardown):
@@ -21,9 +19,11 @@ afterEach(() => {
 
 Let's now also assume that we'll need the city database in multiple tests.
 
-The first issue that we'll run into is that it's easy to forget to setup the cleanup hook. And when we forget, this might cause failures in completely unrelated tests.
-The second issue is that we'll end up adding a lot of repetitive code to multiple tests.
-The third issue is that passing information from the setup to the teardown is rather convoluted, and needs to be passed through exposed variables in a higher scope.
+**The first issue** that we'll run into is that it's easy to forget to setup the cleanup hook. And when we forget, this can cause failures in completely unrelated tests.
+
+**The second issue** is that we'll end up adding a lot of repetitive code to multiple tests.
+
+**The third issue** is that passing information from the setup to the teardown is rather convoluted, and needs to be passed through exposed variables in a higher scope.
 <details>
 <summary>In depth</summary>
 To illustrate, let's take a different scenario. In this scenario, we have a test server that needs to be shut down:
@@ -42,7 +42,7 @@ afterEach(() => {
 Even though our tests are not using `server` directly, it still needs to do the bookkeeping to be able to tear down correctly.
 </details>
 
-The fourth issue is that while we have cleanup hooks for "all" and "each" tests, we don't have cleanup hooks for individual test. Instead, we'll manually need to deal with this using `try-finally` hooks.
+**The fourth issue** is that while we have cleanup hooks for "all" and "each" tests, we don't have cleanup hooks for individual test. Instead, we'll manually need to deal with this using `try-finally` hooks.
 <details>
   <summary>Code example</summary>
   E.g. suppose we only need `initializeCityDatabase` in a single test. We'll then need to write it as such:
