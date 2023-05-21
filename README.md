@@ -159,7 +159,7 @@ describe('my test suite', () {
 
 We're very quickly running into problems here:
 - It is not clear on the callside if this runs around each test (`beforeEach`), or around the entire suite (`beforeAll`).
-- If we want to support bother `beforeEach` and `beforeAll` then we'll need to write multiple flavors of the same function. E.g. `useCityDatabaseEach`/`useCityDatabaseAll`/`useCityDatabase({ scope: 'each'|'all'})`.
+- If we want to support bother `beforeEach` and `beforeAll` then we'll need to write multiple flavors of the same function. E.g. `useCityDatabaseEach`/`useCityDatabaseAll`/`useCityDatabase({ scope: 'each'|'all' })`.
 - We still can't use this for single tests. We could create yet another variant like `withCityDatabase(() => { /* the test */ })`, but this doesn't stack very well. Imagine needing a few of these for a single test, and you'll see the problem.
 - It complicates passing variables from hooks to tests. Let's say that our `beforeEach` creates a test user and we need the users id in our tests. This won't work:
   ```javascript
@@ -246,3 +246,10 @@ test('my test', () => {
   const user = initializeTestUser();
 });
 ```
+
+----
+
+# The fine print
+
+1. `teardown` does not work in `.concurrent` tests. We need to use some shared global state behind the scenes to make it work, which we cannot do in concurrent tests.
+2. `jest-teardown` needs to monkey-patch some of the Jest methods to work. If you find that it breaks something, please file an issue [here](https://github.com/TiddoLangerak/jest-teardown/issues)!
