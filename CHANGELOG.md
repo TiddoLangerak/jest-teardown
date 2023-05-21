@@ -1,3 +1,6 @@
+# v0.2.4
+- Syntax highlighting fixes for the README
+
 # v0.2.3
 - README updates
 
