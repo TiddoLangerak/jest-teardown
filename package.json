@@ -1,6 +1,6 @@
 {
   "name": "jest-teardown",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Jest teardown hooks done right",
   "main": "index.js",
   "types": "./index.d.ts",
