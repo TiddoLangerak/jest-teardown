@@ -1,12 +1,14 @@
 {
   "name": "jest-teardown",
   "version": "0.2.0",
-  "description": "Placeholder for jest-teardown package",
+  "description": "Jest teardown hooks done right",
   "main": "index.js",
   "types": "./index.d.ts",
   "scripts": {
     "test": "jest",
     "preversion": "pnpm test",
+    "version": "pnpm validateChangelog",
+    "validateChangelog": "[ \"# v${npm_package_version}\" = \"$(head -n 1 CHANGELOG.md)\" ]",
     "prepublish": "pnpm test"
   },
   "peerDependencies": {
