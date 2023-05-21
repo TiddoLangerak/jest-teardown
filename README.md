@@ -162,7 +162,7 @@ We're very quickly running into problems here:
 - If we want to support bother `beforeEach` and `beforeAll` then we'll need to write multiple flavors of the same function. E.g. `useCityDatabaseEach`/`useCityDatabaseAll`/`useCityDatabase({ scope: 'each'|'all'})`.
 - We still can't use this for single tests. We could create yet another variant like `withCityDatabase(() => { /* the test */ })`, but this doesn't stack very well. Imagine needing a few of these for a single test, and you'll see the problem.
 - It complicates passing variables from hooks to tests. Let's say that our `beforeEach` creates a test user and we need the users id in our tests. This won't work:
-  ```
+  ```javascript
   describe('my tests', () => {
     const userId = useTestUser();
   });
@@ -173,7 +173,7 @@ We're very quickly running into problems here:
 
 What we really need is a way to attach a teardown hook to some setup, which then automatically runs at the right time. This is what `jest-teardown` does:
 
-```
+```javascript
 import { teardown } from 'jest-teardown';
 
 beforeEach(() => {
@@ -193,7 +193,7 @@ test('my test', () => {
 
 The real benefit is that abstractions now become viable!
 
-```
+```javascript
 import { teardown } from 'jest-teardown';
 
 function useCityDatabase() {
@@ -212,7 +212,7 @@ test('my test', () => {
 
 This even works with shared state between setup and teardown:
 
-```
+```javascript
 import { teardown } from 'jest-teardown';
 
 function useTestServer() {
@@ -230,7 +230,7 @@ test('my test', () => {
 
 And exposing variables to tests works as expected:
 
-```
+```javascript
 import { teardown } from 'jest-teardown';
 
 function useTestUser() {
