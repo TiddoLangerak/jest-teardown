@@ -1,6 +1,6 @@
-# Jest-teardown
+# jest-teardown
 
-_teardown hooks done right._
+_test hooks done right._
 
 `teardown` is a hook that runs at the end of the current scope:
 
@@ -8,14 +8,12 @@ _teardown hooks done right._
 - When placed in a `beforeAll`, it'll run as `afterAll`
 - When placed in a test, it'll run at the end of the test
 
-This allows to put setup & teardown together in reusable utility functions, which can be used in any desired scope.
+This allows to put setup & teardown together in reusable utility functions, which can then be used wherever needed.
 
 # Usage
 Using the example from [Jest's documentation](https://jestjs.io/docs/setup-teardown), with an `initializeCityDatabase` setup method and a `clearCityDatabase` teardown method:
 
 ## Idiomatic usage
-
-For when you have commonly used setup & teardown routines.
 
 ```javascript
 // test-utils/city-database.js
@@ -43,7 +41,7 @@ test('my test', () => {
 
 ## One-off usage
 
-For the cases where the setup & teardown are specific to a single test/test-file.
+For the cases where the setup & teardown are specific to a single test or file, and you don't want to extract it to a utility.
 
 ```javascript
 import { teardown } from 'jest-teardown';
@@ -66,10 +64,10 @@ test('my test', () => {
 
 # Motivation
 
-Out-of-the-box, `jest` provides us with some setup and teardown hooks. While the setup hooks are great, the teardown hooks are not so much.
+Out-of-the-box, `jest` provides us with some common setup and teardown hooks. While the setup hooks are great, the teardown hooks are ... less so.
 
-In a typical case, a teardown hook cleans up something that's being created in their corresponding setup hook.
-E.g. code in an `afterEach` cleans up `beforeEach`, and `afterAll` cleans up `beforeAll`.
+In a typical case, a teardown hook cleans up something that's been created in their matching setup hook.
+E.g. `afterEach` cleans up `beforeEach`, and `afterAll` cleans up `beforeAll`.
 This however creates an implicit coupling between the hooks, which causes unnecessary complexity and fragility in tests.
 To illustrate, let's take the example from [Jest's documentation](https://jestjs.io/docs/setup-teardown):
 
@@ -85,15 +83,14 @@ afterEach(() => {
 
 **The first issue** that we'll run into is that it's easy to forget to add the teardown hook. And when we forget, this can cause failures in completely unrelated tests.
 
-**The second issue** is that we'll end up adding code if multiple tests need access to the same city database.
+**The second issue** is that we'll end up duplicating extra logic if multiple tests have similar setup needs.
 
-**The third issue** is that sharing state between the setup to the teardown is rather convoluted, as it needs to be passed through exposed variables in a higher scope.
+**The third issue** is that sharing state between the setup to the teardown is rather convoluted, as it needs to be passed through exposed variables in a higher (unrelated) scope.
 <details>
-<summary>In depth</summary>
-
-To illustrate, let's take a different scenario. In this scenario, we have a test server that needs to be shut down:
+<summary>Example</summary>
 
 ```javascript
+// Server isn't accessed by the tests, but we're still forced to keep track of it for the `afterEach` hook.
 let server;
 
 beforeEach(() => {
@@ -104,7 +101,6 @@ afterEach(() => {
   server?.shutdown();
 });
 ```
-Even though our tests are not using `server` directly, it still needs to do the bookkeeping to be able to tear down correctly.
 
 -----
 
@@ -113,11 +109,10 @@ Even though our tests are not using `server` directly, it still needs to do the 
 
 **The fourth issue** is that while we have teardown hooks for "all" and "each" tests, we don't have teardown hooks for individual test. Instead, we'll manually need to teardown using `try-finally` constructs.
 <details>
-  <summary>In depth</summary>
-
-  Suppose we only need `initializeCityDatabase` in a single test. We'll then need to write it as such:
-
+  <summary>Example</summary>
   ```javascript
+  // If we only need the city database in some isolated test(s), then we'll need to write something convoluted like this:
+
   it('does something', () => {
     try {
       initializeCityDatabase();
@@ -126,11 +121,9 @@ Even though our tests are not using `server` directly, it still needs to do the 
       clearCityDatabase();
     }
   });
-  ```
 
-  And even worse is when combined with the previous issue, where we need to share state between setup and teardown:
+  // And it gets worse when we need to share state with our teardown:
 
-  ```javascript
   it('does something', () => {
     let server;
     try {
@@ -142,14 +135,11 @@ Even though our tests are not using `server` directly, it still needs to do the 
   });
   ```
 
-  This adds unnecessary boilerplate to the tests, and make them far less readable.
-
-  ----
-
 </details>
 
-Normally when we're dealing with repetitive code, or tightly coupled logic, we would encapsulate this. We could try this with hooks, but we'll soon find out that this doesn't work very well.
-A naive approach would be to just put the entire snippet above in a function. E.g.:
+----
+
+Normally when we're dealing with repetitive code or shared state, we would encapsulate this. We could try this with hooks, but we'll soon find out that this doesn't work very well:
 
 ```javascript
 function useCityDatabase() {
@@ -167,18 +157,20 @@ describe('my test suite', () {
 ```
 
 We're very quickly running into problems here:
-- What if some of our tests want a `beforeEach`, and others `beforeAll`? This would require us to have multiple flavors of the same function. E.g. `useCityDatabaseEach`/`useCityDatabaseAll`/`useCityDatabase({ scope: 'each'|'all'})`.
-- We still can't use this for single tests. We could create yet another variant like `withCityDatabase(() => { /* the test */ })`, but these don't stack very well. Imagine needing a few of these for a single test, and you'll see the problem.
-- How would we pass variables from the hook to our test? Let's say that our `beforeEach` creates a test user and we need the users id in our tests. This won't work:
+- It is not clear on the callside if this runs around each test (`beforeEach`), or around the entire suite (`beforeAll`).
+- If we want to support bother `beforeEach` and `beforeAll` then we'll need to write multiple flavors of the same function. E.g. `useCityDatabaseEach`/`useCityDatabaseAll`/`useCityDatabase({ scope: 'each'|'all'})`.
+- We still can't use this for single tests. We could create yet another variant like `withCityDatabase(() => { /* the test */ })`, but this doesn't stack very well. Imagine needing a few of these for a single test, and you'll see the problem.
+- It complicates passing variables from hooks to tests. Let's say that our `beforeEach` creates a test user and we need the users id in our tests. This won't work:
   ```
   describe('my tests', () => {
     const userId = useTestUser();
   });
   ```
-  There are creative ways to make these work, but none of these are clean and straightforward.
+  There are creative ways to work around this, but none of these are particularly straightforward.
 
 # The solution
-What we really want is a way to contextually attach a teardown hook to some setup, which then automatically runs at the right time. This is what `jest-teardown` does:
+
+What we really need is a way to attach a teardown hook to some setup, which then automatically runs at the right time. This is what `jest-teardown` does:
 
 ```
 import { teardown } from 'jest-teardown';
@@ -198,7 +190,7 @@ test('my test', () => {
 });
 ```
 
-The real benefit now is that suddenly our `useCityDatabase` method is viable, and we can abstract it all away!
+The real benefit is that abstractions now become viable!
 
 ```
 import { teardown } from 'jest-teardown';
@@ -213,11 +205,11 @@ beforeEach(() => useCityDatabase());
 beforeAll(() => useCityDatabase());
 test('my test', () => {
   useCityDatabase();
-  // The rest of the test
+  /* test logic */
 });
 ```
 
-We can also abstract away any additional bookkeeping:
+This even works with shared state between setup and teardown:
 
 ```
 import { teardown } from 'jest-teardown';
