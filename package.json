@@ -1,7 +1,11 @@
 {
   "name": "jest-teardown",
   "version": "0.2.4",
-  "description": "Jest teardown hooks done right",
+  "description": "Unified teardown hook for Jest that enables bundling of setup & teardown work into reusable functions.",
+  "keywords": [
+    "jest",
+    "test"
+  ],
   "main": "index.js",
   "types": "./index.d.ts",
   "scripts": {
@@ -18,11 +22,11 @@
     "jest": "^29.5.0",
     "pnpm": "^8.5.1"
   },
-  "keywords": [
-    "jest",
-    "test"
-  ],
   "author": "Tiddo Langerak <npm@tiddo.ee>",
+  "homepage": "https://github.com/TiddoLangerak/jest-teardown",
+  "bugs": {
+    "url": "https://github.com/TiddoLangerak/jest-teardown/issues"
+  },
   "license": "MIT",
   "files": [
     "index.js",
