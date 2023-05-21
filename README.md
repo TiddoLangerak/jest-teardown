@@ -4,14 +4,14 @@ _test hooks done right._
 
 `teardown` is a hook that runs at the end of the current scope:
 
-- When placed in a `beforeEach`, it'll run as `afterEach`
-- When placed in a `beforeAll`, it'll run as `afterAll`
-- When placed in a test, it'll run at the end of the test
+- When called in a `beforeEach`, it'll run as `afterEach`
+- When called in a `beforeAll`, it'll run as `afterAll`
+- When called in a test, it'll run at the end of the test
 
 This allows to put setup & teardown together in reusable utility functions, which can then be used wherever needed.
 
 # Usage
-Using the example from [Jest's documentation](https://jestjs.io/docs/setup-teardown), with an `initializeCityDatabase` setup method and a `clearCityDatabase` teardown method:
+Using the example from [the Jest documentation](https://jestjs.io/docs/setup-teardown): we have an `initializeCityDatabase` setup method and a `clearCityDatabase` teardown method:
 
 ## Idiomatic usage
 
@@ -27,11 +27,11 @@ export function useCityDatabase() {
 // my-test.spec.js
 import { useCityDatabase } from './test-utils/city-database';
 
-// setup in `beforeEach`, teardown in `afterEach`
+// setup runs in `beforeEach`, teardown in `afterEach`
 beforeEach(() => useCityDatabase());
-// setup in `beforeAll`, teardown in `afterAll`
+// setup runs in `beforeAll`, teardown in `afterAll`
 beforeAll(() => useCityDatabase());
-// setup in test, teardown at the end of the test
+// setup runs at start of test, teardown at the end of the test
 test('my test', () => {
   useCityDatabase();
   /* rest of the test */
