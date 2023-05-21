@@ -1,6 +1,6 @@
 {
   "name": "jest-teardown",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Placeholder for jest-teardown package",
   "main": "index.js",
   "types": "./index.d.ts",
