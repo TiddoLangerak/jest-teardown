@@ -1,3 +1,8 @@
+# v0.2.5
+- Further improvements to README
+- Link to Github repo from package.json manifest
+
+
 # v0.2.4
 - Syntax highlighting fixes for the README
 - Add the fine print
