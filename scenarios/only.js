@@ -1,10 +1,10 @@
-const { cleanup } = require('../index.js');
+const { teardown } = require('../index.js');
 const { log } = require('./util.js');
 
 describe("only", () => {
   test.only("only test", () => {
     log("only test");
-    cleanup(() => log("cleanup only"));
+    teardown(() => log("teardown only"));
   });
 
   test.only.each([
@@ -12,12 +12,12 @@ describe("only", () => {
     [2,3,4]
   ])('only each', (a, b, c) => {
     log(`only each ${a} ${b} ${c}`);
-    cleanup(() => log(`cleanup only each ${a} ${b} ${c}`));
+    teardown(() => log(`teardown only each ${a} ${b} ${c}`));
   });
 
   test.only.failing('only failing', () => {
     log(`only failing`);
-    cleanup(() => log(`cleanup only failing`));
+    teardown(() => log(`teardown only failing`));
     expect(true).toBe(false);
   });
 

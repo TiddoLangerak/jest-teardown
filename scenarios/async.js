@@ -1,4 +1,4 @@
-const { cleanup } = require('../index.js');
+const { teardown } = require('../index.js');
 const { log } = require('./util.js');
 
 const nextTick = () => new Promise(resolve => setTimeout(resolve));
@@ -8,9 +8,9 @@ describe('suite', () => {
     await nextTick();
     log('beforeAll');
     await nextTick();
-    cleanup(async() => {
+    teardown(async() => {
       await nextTick();
-      log('cleanup all');
+      log('teardown all');
       await nextTick();
     });
   });
@@ -19,9 +19,9 @@ describe('suite', () => {
     await nextTick();
     log('beforeEach');
     await nextTick();
-    cleanup(async() => {
+    teardown(async() => {
       await nextTick();
-      log('cleanup each');
+      log('teardown each');
       await nextTick();
     });
   });
@@ -30,9 +30,9 @@ describe('suite', () => {
     await nextTick();
     log('succeeding test');
     await nextTick();
-    cleanup(async() => {
+    teardown(async() => {
       await nextTick();
-      log('cleanup succeeding test');
+      log('teardown succeeding test');
       await nextTick();
     });
   });
@@ -40,9 +40,9 @@ describe('suite', () => {
     await nextTick();
     log('failing it');
     await nextTick();
-    cleanup(async() => {
+    teardown(async() => {
       await nextTick();
-      log('cleanup failing it');
+      log('teardown failing it');
       await nextTick();
     });
     throw new Error("Failing");

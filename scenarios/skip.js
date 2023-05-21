@@ -1,10 +1,10 @@
-const { cleanup } = require('../index.js');
+const { teardown } = require('../index.js');
 const { log } = require('./util.js');
 
 describe("skip", () => {
   test.skip("skip test", () => {
     log("skip test");
-    cleanup(() => log("cleanup skip"));
+    teardown(() => log("teardown skip"));
   });
 
   test.skip.each([
@@ -12,12 +12,12 @@ describe("skip", () => {
     [2,3,4]
   ])('skip each', (a, b, c) => {
     log(`skip each ${a} ${b} ${c}`);
-    cleanup(() => log(`cleanup skip each ${a} ${b} ${c}`));
+    teardown(() => log(`teardown skip each ${a} ${b} ${c}`));
   });
 
   test.skip.failing('skip failing', () => {
     log(`skip failing`);
-    cleanup(() => log(`cleanup skip failing`));
+    teardown(() => log(`teardown skip failing`));
     expect(true).toBe(false);
   });
 

@@ -1,10 +1,10 @@
-const { cleanup } = require('../index.js');
+const { teardown } = require('../index.js');
 const { log } = require('./util.js');
 
 describe("failing", () => {
   test.failing("failing test", () => {
     log("failing test");
-    cleanup(() => log("cleanup failing"));
+    teardown(() => log("teardown failing"));
     expect(true).toBe(false);
   });
 
@@ -13,7 +13,7 @@ describe("failing", () => {
     [2,3,4]
   ])('failing each', (a, b, c) => {
     log(`failing each ${a} ${b} ${c}`);
-    cleanup(() => log(`cleanup failing each ${a} ${b} ${c}`));
+    teardown(() => log(`teardown failing each ${a} ${b} ${c}`));
     expect(true).toBe(false);
   });
 

@@ -1,8 +1,8 @@
-const { cleanup } = require('../index.js');
+const { teardown } = require('../index.js');
 const { log } = require('./util.js');
 
 try {
-  cleanup(() => {});
+  teardown(() => {});
 } catch (e) {
   log(e.message);
 }

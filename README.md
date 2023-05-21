@@ -19,7 +19,7 @@ afterEach(() => {
 
 Let's now also assume that we'll need the city database in multiple tests.
 
-**The first issue** that we'll run into is that it's easy to forget to setup the cleanup hook. And when we forget, this can cause failures in completely unrelated tests.
+**The first issue** that we'll run into is that it's easy to forget to add the teardown hook. And when we forget, this can cause failures in completely unrelated tests.
 
 **The second issue** is that we'll end up adding a lot of repetitive code to multiple tests.
 
@@ -42,7 +42,7 @@ afterEach(() => {
 Even though our tests are not using `server` directly, it still needs to do the bookkeeping to be able to tear down correctly.
 </details>
 
-**The fourth issue** is that while we have cleanup hooks for "all" and "each" tests, we don't have cleanup hooks for individual test. Instead, we'll manually need to deal with this using `try-finally` hooks.
+**The fourth issue** is that while we have teardown hooks for "all" and "each" tests, we don't have teardown hooks for individual test. Instead, we'll manually need to deal with this using `try-finally` hooks.
 <details>
   <summary>Code example</summary>
   E.g. suppose we only need `initializeCityDatabase` in a single test. We'll then need to write it as such:
@@ -106,22 +106,22 @@ But we're very quickly running into problems here:
   ```
 
 # The solution
-What we really want is a way to contextually attach a teardown hook to some setup, which then automatically runs at the right time. This is what `jest-cleanup` does:
+What we really want is a way to contextually attach a teardown hook to some setup, which then automatically runs at the right time. This is what `jest-teardown` does:
 
 ```
-import { cleanup } from 'jest-cleanup';
+import { teardown } from 'jest-teardown';
 
 beforeEach(() => {
   initializeCityDatabase();
-  cleanup(() => clearCityDatabase()); // will run in `afterEach`
+  teardown(() => clearCityDatabase()); // will run in `afterEach`
 });
 beforeAll(() => {
   initializeCityDatabase();
-  cleanup(() => clearCityDatabase()); // will run in `afterAll`
+  teardown(() => clearCityDatabase()); // will run in `afterAll`
 });
 test('my test', () => {
   initializeCityDatabase();
-  cleanup(() => clearCityDatabase()); // will run after 'my test' completes
+  teardown(() => clearCityDatabase()); // will run after 'my test' completes
   // the rest of the test
 });
 ```
@@ -129,11 +129,11 @@ test('my test', () => {
 The real benefit now comes from the fact that suddenly our `useCityDatabase` method becomes viable, and we can abstract it all away!
 
 ```
-import { cleanup } from 'jest-cleanup';
+import { teardown } from 'jest-teardown';
 
 function useCityDatabase() {
   initializeCityDatabase();
-  cleanup(() => clearCityDatabase());
+  teardown(() => clearCityDatabase());
 }
 
 beforeEach(() => useCityDatabase());
@@ -147,11 +147,11 @@ test('my test', () => {
 We can also abstract away any additional bookkeeping:
 
 ```
-import { cleanup } from 'jest-cleanup';
+import { teardown } from 'jest-teardown';
 
 function useTestServer() {
   const server = initializeTestServer();
-  cleanup(() => server.shutdown());
+  teardown(() => server.shutdown());
 }
 
 beforeEach(() => useTestServer());
@@ -165,11 +165,11 @@ test('my test', () => {
 And exposing variables to tests works as expected:
 
 ```
-import { cleanup } from 'jest-cleanup';
+import { teardown } from 'jest-teardown';
 
 function useTestUser() {
   const user = initializeTestUser();
-  cleanup(() => removeTestUser(user));
+  teardown(() => removeTestUser(user));
   return user;
 }
 

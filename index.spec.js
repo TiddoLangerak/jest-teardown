@@ -6,17 +6,17 @@ const fs = require('node:fs/promises');
 
 const sockPath = path.join(__dirname, 'test.sock');
 
-describe('cleanup', () => {
+describe('teardown', () => {
 
   let server;
   let data = '';
-  async function cleanupSocket() {
+  async function teardownSocket() {
     try {
       await fs.unlink(sockPath);
     } catch (e) {}
   }
   beforeAll(async () => {
-    await cleanupSocket();
+    await teardownSocket();
     server = net.createServer(c => {
       c.on('data', (d) => {
         data += d.toString();
@@ -35,7 +35,7 @@ describe('cleanup', () => {
 
   afterAll(async () => {
     server.close();
-    await cleanupSocket();
+    await teardownSocket();
   });
 
   describe('when placed in a beforeAll', () => {
@@ -59,12 +59,12 @@ describe('cleanup', () => {
         "Inner before all",
         "test 1",
         "test 2",
-        "Inner cleanup",
+        "Inner teardown",
         "Inner before all 2",
         "test 3",
         "test 4",
-        "Inner cleanup 2",
-        "Outer cleanup",
+        "Inner teardown 2",
+        "Outer teardown",
         ""
       ].join('\n'));
     });
@@ -92,13 +92,13 @@ describe('cleanup', () => {
         "Outer before each",
         "Inner before each",
         "test 1",
-        "Inner cleanup",
-        "Outer cleanup",
+        "Inner teardown",
+        "Outer teardown",
         "Outer before each",
         "Inner before each",
         "test 2",
-        "Inner cleanup",
-        "Outer cleanup",
+        "Inner teardown",
+        "Outer teardown",
         ""
       ].join('\n'));
     });
@@ -109,13 +109,13 @@ describe('cleanup', () => {
       await runScenario('test_it', true);
       expect(data).toBe([
         "succeeding test",
-        "cleanup succeeding test",
+        "teardown succeeding test",
         "succeeding it",
-        "cleanup succeeding it",
+        "teardown succeeding it",
         "failing test",
-        "cleanup failing test",
+        "teardown failing test",
         "failing it",
-        "cleanup failing it",
+        "teardown failing it",
         ""
       ].join('\n'));
     });
@@ -128,13 +128,13 @@ describe('cleanup', () => {
         "beforeAll",
         "beforeEach",
         "succeeding test",
-        "cleanup succeeding test",
-        "cleanup each",
+        "teardown succeeding test",
+        "teardown each",
         "beforeEach",
         "failing it",
-        "cleanup failing it",
-        "cleanup each",
-        "cleanup all",
+        "teardown failing it",
+        "teardown each",
+        "teardown all",
         ""
       ].join('\n'));
     });
@@ -144,19 +144,19 @@ describe('cleanup', () => {
     test('it throws an error', async () => {
       await runScenario('outside');
       expect(data).toBe([
-        "cleanup can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
+        "teardown can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
         ""
       ].join('\n'));
     });
   });
 
   describe('in a concurrent test', () => {
-    test('it throws an error when using a cleanup hook', async () => {
+    test('it throws an error when using a teardown hook', async () => {
       await runScenario('concurrent');
       expect(data).toBe([
-        "non-cleanup test",
-        "cleanup test",
-        "cleanup can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
+        "non-teardown test",
+        "teardown test",
+        "teardown can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
         ""
       ].join('\n'));
     });
@@ -167,13 +167,13 @@ describe('cleanup', () => {
       await runScenario('each');
       expect(data).toBe([
         "each 1 2 3",
-        "cleanup 1 2 3",
+        "teardown 1 2 3",
         "each 2 3 4",
-        "cleanup 2 3 4",
+        "teardown 2 3 4",
         "template 1 2 3",
-        "cleanup template 1 2 3",
+        "teardown template 1 2 3",
         "template 2 3 4",
-        "cleanup template 2 3 4",
+        "teardown template 2 3 4",
         ""
       ].join('\n'));
     });
@@ -183,11 +183,11 @@ describe('cleanup', () => {
       await runScenario('failing');
       expect(data).toBe([
         "failing test",
-        "cleanup failing",
+        "teardown failing",
         "failing each 1 2 3",
-        "cleanup failing each 1 2 3",
+        "teardown failing each 1 2 3",
         "failing each 2 3 4",
-        "cleanup failing each 2 3 4",
+        "teardown failing each 2 3 4",
         ""
       ].join('\n'));
     });
@@ -198,13 +198,13 @@ describe('cleanup', () => {
       await runScenario("only");
       expect(data).toBe([
         "only test",
-        "cleanup only",
+        "teardown only",
         "only each 1 2 3",
-        "cleanup only each 1 2 3",
+        "teardown only each 1 2 3",
         "only each 2 3 4",
-        "cleanup only each 2 3 4",
+        "teardown only each 2 3 4",
         "only failing",
-        "cleanup only failing",
+        "teardown only failing",
         ""
       ].join('\n'));
     });

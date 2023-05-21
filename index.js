@@ -6,9 +6,9 @@ const {
 } = globalThis;
 
 let cleaners;
-function cleanup(cb) {
+function teardown(cb) {
   if (!cleaners) {
-    throw new Error("cleanup can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.");
+    throw new Error("teardown can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.");
   }
   cleaners.push(cb);
 }
@@ -66,4 +66,4 @@ globalThis.beforeEach = patchedHook(jBeforeEach, afterEach);
 globalThis.test = patchedTest(jTest);
 globalThis.it = patchedTest(jIt);
 
-module.exports = { cleanup };
+module.exports = { teardown };

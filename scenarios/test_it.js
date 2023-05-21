@@ -1,25 +1,25 @@
-const { cleanup } = require('../index.js');
+const { teardown } = require('../index.js');
 const { log } = require('./util.js');
 
 describe('test', () => {
   test('succeeding test', () => {
-    cleanup(() => log('cleanup succeeding test'));
+    teardown(() => log('teardown succeeding test'));
     log('succeeding test');
   });
 
   it('succeeding it', () => {
-    cleanup(() => log('cleanup succeeding it'));
+    teardown(() => log('teardown succeeding it'));
     log('succeeding it');
   });
 
   test('failing test', () => {
-    cleanup(() => log('cleanup failing test'));
+    teardown(() => log('teardown failing test'));
     log('failing test');
     expect(true).toBe(false);
   });
 
   it('succeeding it', () => {
-    cleanup(() => log('cleanup failing it'));
+    teardown(() => log('teardown failing it'));
     log('failing it');
     expect(true).toBe(false);
   });
