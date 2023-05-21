@@ -10,12 +10,12 @@ _Cleanup from anywhere._
 - When called in a `beforeAll`, it'll run as `afterAll`
 - When called in a test, it'll run at the end of the test
 
-This allows to put setup & teardown together in reusable utility functions, which can then be re-used wherever needed.
+This allows putting setup & teardown together in reusable utility functions, which can then be re-used wherever needed.
 
-# Usage
+## Usage
 Using the example from [the Jest documentation](https://jestjs.io/docs/setup-teardown): we have an `initializeCityDatabase` setup method and a `clearCityDatabase` teardown method:
 
-## Idiomatic usage
+### Idiomatic usage
 
 ```javascript
 // test-utils/city-database.js
@@ -41,7 +41,7 @@ test('my test', () => {
 ```
 
 
-## One-off usage
+### One-off usage
 
 For the cases where the setup & teardown are specific to a single test or file, and you don't want to extract it to a utility.
 
@@ -64,13 +64,13 @@ test('my test', () => {
 ```
 
 
-# Motivation
+## Motivation
 
 Out-of-the-box, `jest` provides us with some common setup and teardown hooks. While the setup hooks are great, the teardown hooks are ... less so.
 
 In a typical case, a teardown hook cleans up something that's been created in their matching setup hook.
 E.g. `afterEach` cleans up `beforeEach`, and `afterAll` cleans up `beforeAll`.
-This however creates an implicit coupling between the hooks, which causes unnecessary complexity and fragility in tests.
+This creates an implicit coupling between the hooks, which causes unnecessary complexity and boilerplate in tests.
 To illustrate, let's take the example from [Jest's documentation](https://jestjs.io/docs/setup-teardown):
 
 ```javascript
@@ -83,9 +83,9 @@ afterEach(() => {
 });
 ```
 
-**The first issue** is that it's easy to forget to add the teardown hook. And when we forget, this can cause failures in completely unrelated tests that follow later.
+**The first issue** is that it's easy to forget adding the teardown hook. And when we forget, this can cause failures in completely unrelated tests that follow later.
 
-**The second issue** is that we'll end up duplicating additional logic if multiple tests have similar setup needs, without a good way of abstracting this.
+**The second issue** is that we'll end up duplicating snippets when multiple tests have similar setup needs, without a good way of abstracting this.
 
 **The third issue** is that sharing state between the setup to the teardown is rather convoluted, as it needs to be passed through exposed variables in a higher (unrelated) scope.
 <details>
@@ -114,18 +114,8 @@ afterEach(() => {
   <summary>Example</summary>
 
   ```javascript
-  // If we only need the city database in some isolated test(s), then we'll need to write something convoluted like this:
-
-  it('does something', () => {
-    try {
-      initializeCityDatabase();
-      /* The actual test */
-    } finally {
-      clearCityDatabase();
-    }
-  });
-
-  // And it gets worse when we need to share state with our teardown:
+  // If we only need our teardown for some isolated test(s),
+  // then we'll need to write something boilerplate-heavy like this:
 
   it('does something', () => {
     let server;
@@ -160,8 +150,7 @@ describe('my test suite', () {
 ```
 
 We're very quickly running into problems here:
-- It is not clear on the callside if this runs around each test (`beforeEach`), or around the entire suite (`beforeAll`).
-- If we want to support bother `beforeEach` and `beforeAll` then we'll need to write multiple flavors of the same function. E.g. `useCityDatabaseEach`/`useCityDatabaseAll`/`useCityDatabase({ scope: 'each'|'all' })`.
+- If we want to support both `beforeEach` and `beforeAll` then we'll need to write multiple flavors of the same function. E.g. `useCityDatabaseEach`/`useCityDatabaseAll`/`useCityDatabase({ scope: 'each'|'all' })`.
 - We still can't use this for single tests. We could create yet another variant like `withCityDatabase(() => { /* the test */ })`, but this doesn't stack very well. Imagine needing a few of these for a single test, and you'll see the problem.
 - It complicates passing variables from hooks to tests. Let's say that our `beforeEach` creates a test user and we need the users id in our tests. This won't work:
   ```javascript
@@ -171,7 +160,7 @@ We're very quickly running into problems here:
   ```
   There are creative ways to work around this, but none of these are particularly straightforward.
 
-# The solution
+## The solution
 
 What we really need is a way to attach a teardown hook to some setup, which then automatically runs at the right time. This is what `jest-teardown` does:
 
@@ -193,7 +182,7 @@ test('my test', () => {
 });
 ```
 
-The real benefit is that abstractions now become viable!
+The real benefit is that it now enables us to encapsulate this trivially!
 
 ```javascript
 import { teardown } from 'jest-teardown';
@@ -230,7 +219,7 @@ test('my test', () => {
 });
 ```
 
-And exposing variables to tests works as expected:
+And exposing variables to tests works too:
 
 ```javascript
 import { teardown } from 'jest-teardown';
@@ -251,7 +240,7 @@ test('my test', () => {
 
 ----
 
-# The fine print
+## The fine print
 
 1. `teardown` does not work in `.concurrent` tests. We need to use some shared global state behind the scenes to make it work, which we cannot do in concurrent tests.
 2. `jest-teardown` needs to monkey-patch some of the Jest methods to work. If you find that it breaks something, please file an issue [here](https://github.com/TiddoLangerak/jest-teardown/issues)!
