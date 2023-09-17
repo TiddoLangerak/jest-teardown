@@ -1,3 +1,18 @@
+/**
+ * This test class runs a little bit different from your normal unit test class:
+ * Since most of `jest-teardown` logic runs _after test completion_, we cannot actually
+ * test this logic directly from within a test.
+ *
+ * Therefore, our approach towards testing is to spin up scenarios in a separate jest process,
+ * and send back any relevant information back to the main jest process.
+ * Then, in the main process we can validate this information, as well as validate the output of the process when applicable.
+ *
+ * So the basic anatomy is this:
+ * - We spin up our socket
+ * - We run a scenario (from `scenarios/`) in a new jest process
+ * - This process sends information back to our process
+ * - Once the scenario finishes, we validate this information
+ */
 const net = require('node:net');
 const path = require('node:path');
 const url = require('url');
