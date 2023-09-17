@@ -1,3 +1,10 @@
+/**
+ * The overall approach of this feature is as followed:
+ * - We register `beforeEach`/`beforeAll` hooks that initialize a "teardowns" array for the current scope. This array will keep track of all teardown hooks registered.
+ * - This array is then assigned to a shared global state variable (`teardowns`, see below).
+ * - Whenever `teardown` is then called, it will push the callback to the current global `teardowns` array.
+ * - We als register `afterEach/afterAll` hooks, which processes the teardowns array and resets them.
+ */
 const {
   beforeAll: jBeforeAll,
   beforeEach: jBeforeEach,
@@ -17,13 +24,6 @@ function teardown(cb) {
   teardowns.push(cb);
 }
 
-function patchHook(jBefore, jAfter) {
-  return (...args) => {
-    setupTeardowns(jBefore, jAfter);
-    jBefore(...args);
-  }
-}
-
 function setupTeardowns(jBefore, jAfter) {
   const myTeardowns = [];
 
@@ -39,8 +39,22 @@ function setupTeardowns(jBefore, jAfter) {
   });
 }
 
-globalThis.beforeAll = patchHook(jBeforeAll, jAfterAll);
+// Note that it's not sufficient to just call `setupTeardowns(jBeforeAll, jAfterAll)`:
+// each describe block has it's own "all-scope", and we need to setup a beforeAll/afterAll for each describe block.
+// Unfortunately, there isn't a top-level hook that we can use for this, there's no `beforeDescribe/afterDescribe`.
+// Hence, we'll need to monkey patch something.
+// We have the choice between monkey-patching `describe` or `beforeAll`.
+// We choose `beforeAll` here, for 2 reasons:
+// 1. it's simpler - no need to deal with properties on the callback (e.g. skip/only)
+// 2. it's (usually) more efficient, as we'll only end up intercepting whenever `beforeAll` is actually used.
+//
+// The only caveat is that we might register multiple handlers if `beforeAll` is called multiple times, but this should just work as expected.
+globalThis.beforeAll = (...args) => {
+  setupTeardowns(jBeforeAll, jAfterAll);
+  jBeforeAll(...args);
+}
 
+// Each runs for each test, regardless of nesting, hence we don't need patching.
 setupTeardowns(jBeforeEach, jAfterEach);
 
 module.exports = { teardown };
