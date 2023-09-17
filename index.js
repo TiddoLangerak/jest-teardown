@@ -37,7 +37,6 @@ function patchedHook(jBefore, after) {
 }
 
 globalThis.beforeAll = patchedHook(jBeforeAll, afterAll);
-globalThis.beforeEach = patchedHook(jBeforeEach, afterEach);
 
 /**
  * This `beforeEach` call is to make sure that teardown works for calls made from within tests:
@@ -46,6 +45,7 @@ globalThis.beforeEach = patchedHook(jBeforeEach, afterEach);
  *
  * (The alternative is to patch each test method as well, which we'd like to avoid doing)
  */
-beforeEach(() => {});
+let patchedEach = patchedHook(jBeforeEach, afterEach);
+patchedEach(() => {});
 
 module.exports = { teardown };
