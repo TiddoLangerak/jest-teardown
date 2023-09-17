@@ -32,6 +32,8 @@ function setupTeardowns(jBefore, jAfter) {
   });
 
   jAfter(async() => {
+    // The `myTeardowns` array will be reused (e.g. each `eforeEach` iteration),
+    // hence we must splice out any teardowns we're processing here, to make sure they're not triggered again
     for (const cleaner of myTeardowns.splice(0, Number.POSITIVE_INFINITY).reverse()) {
       await cleaner();
     }
