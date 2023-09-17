@@ -42,12 +42,12 @@ function setupTeardowns(jBefore, jAfter) {
 }
 
 // Note that it's not sufficient to just call `setupTeardowns(jBeforeAll, jAfterAll)`:
-// each describe block has it's own "all-scope", and we need to setup a beforeAll/afterAll for each describe block.
+// each describe block has it's own "beforeAll-scope", and thus we need to setup a beforeAll/afterAll for each describe block.
 // Unfortunately, there isn't a top-level hook that we can use for this, there's no `beforeDescribe/afterDescribe`.
 // Hence, we'll need to monkey patch something.
 // We have the choice between monkey-patching `describe` or `beforeAll`.
 // We choose `beforeAll` here, for 2 reasons:
-// 1. it's simpler - no need to deal with properties on the callback (e.g. skip/only)
+// 1. it's simpler - no need to deal with properties on the method (e.g. describe.skip/.only)
 // 2. it's (usually) more efficient, as we'll only end up intercepting whenever `beforeAll` is actually used.
 //
 // The only caveat is that we might register multiple handlers if `beforeAll` is called multiple times, but this should just work as expected.
