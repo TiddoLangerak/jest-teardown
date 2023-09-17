@@ -250,6 +250,10 @@ describe('teardown', () => {
 
 async function runScenario(scenario, expectError = false) {
     await new Promise((resolve, reject) => {
+      // Note that the scenarios do NOT end with `.spec.js/.test.js`,
+      //   cause otherwise they would be executed as part of the outer test suite.
+      // So instead, we provide --testRegex=.* to indicate that any file we pass in
+      //   is a test file
       const res = cp.exec(
         `node_modules/.bin/jest --runTestsByPath scenarios/${scenario}.js --testRegex=.*`,
         {},
