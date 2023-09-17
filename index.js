@@ -35,6 +35,7 @@ function setupCleaners(jBefore, jAfter) {
     for (const cleaner of myCleaners.splice(0, Number.POSITIVE_INFINITY).reverse()) {
       await cleaner();
     }
+    cleaners = undefined;
   });
 }
 
