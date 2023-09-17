@@ -4,8 +4,32 @@ const { log } = require('./util.js');
 try {
   teardown(() => {});
 } catch (e) {
-  log(e.message);
+  log(`before: ${e.message}`);
 }
 
-// Needed to make the test suite not empty
-test("", () => {});
+beforeAll(() => {});
+beforeEach(() => {});
+
+describe('outer', () => {
+  try {
+    teardown(() => {});
+  } catch (e) {
+    log(`inner before: ${e.message}`);
+  }
+
+  beforeAll(() => {});
+  beforeEach(() => {});
+  test("", () => {});
+
+  try {
+    teardown(() => {});
+  } catch (e) {
+    log(`inner after: ${e.message}`);
+  }
+});
+
+try {
+  teardown(() => {});
+} catch (e) {
+  log(`after: ${e.message}`);
+}

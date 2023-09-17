@@ -159,7 +159,10 @@ describe('teardown', () => {
     test('it throws an error', async () => {
       await runScenario('outside');
       expect(data).toBe([
-        "teardown can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
+        "before: teardown can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
+        "inner before: teardown can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
+        "inner after: teardown can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
+        "after: teardown can only be called from within `beforeAll`, `beforeEach`, `test` or `it`. It cannot be called from concurrent tests.",
         ""
       ].join('\n'));
     });
